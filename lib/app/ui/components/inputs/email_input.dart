@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:petdiary/app/ui/helpers/i18n/resources.dart';
 import 'package:petdiary/app/ui/helpers/ui_error.dart';
-import 'package:petdiary/app/ui/pages/signup/signup_presenter.dart';
 
 class EmailInput extends StatelessWidget {
+  final Stream<UIError> emailErrorStream;
+  final Function validateEmail;
+
+  const EmailInput({
+    @required this.emailErrorStream,
+    @required this.validateEmail,
+  });
+
   @override
   Widget build(BuildContext context) {
-    SignUpPresenter presenter = Get.find();
-
     return StreamBuilder<UIError>(
-      stream: presenter.emailErrorStream,
+      stream: emailErrorStream,
       builder: (context, snapshot) {
         return TextFormField(
           decoration: InputDecoration(
@@ -19,7 +23,7 @@ class EmailInput extends StatelessWidget {
             errorText: snapshot.hasData ? snapshot.data.description : null,
           ),
           keyboardType: TextInputType.emailAddress,
-          onChanged: presenter.validateEmail,
+          onChanged: validateEmail,
         );
       },
     );

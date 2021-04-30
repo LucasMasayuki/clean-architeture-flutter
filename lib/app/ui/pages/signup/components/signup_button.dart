@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:petdiary/app/ui/helpers/i18n/resources.dart';
-import 'package:petdiary/app/ui/pages/signup/signup_presenter.dart';
 
 class SignUpButton extends StatelessWidget {
+  final Stream<bool> isFormValidStream;
+  final Function signUp;
+
+  const SignUpButton({
+    @required this.isFormValidStream,
+    @required this.signUp,
+  });
+
   @override
   Widget build(BuildContext context) {
-    SignUpPresenter presenter = Get.find();
-
     return StreamBuilder<bool>(
-      stream: presenter.isFormValidStream,
+      stream: isFormValidStream,
       builder: (context, snapshot) {
         return ElevatedButton(
-          onPressed: snapshot.data == true ? presenter.signUp : null,
+          onPressed: snapshot.data == true ? signUp : null,
           child: Text(R.string.addAccount.toUpperCase()),
         );
       },

@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:petdiary/app/ui/helpers/i18n/resources.dart';
 import 'package:petdiary/app/ui/helpers/ui_error.dart';
-import 'package:petdiary/app/ui/pages/signup/signup_presenter.dart';
 
 class NameInput extends StatelessWidget {
+  final Stream<UIError> nameErrorStream;
+  final Function validateName;
+
+  const NameInput({
+    @required this.nameErrorStream,
+    @required this.validateName,
+  });
+
   @override
   Widget build(BuildContext context) {
-    SignUpPresenter presenter = Get.find();
-
     return StreamBuilder<UIError>(
-      stream: presenter.nameErrorStream,
+      stream: nameErrorStream,
       builder: (context, snapshot) {
         return TextFormField(
           decoration: InputDecoration(
@@ -22,7 +26,7 @@ class NameInput extends StatelessWidget {
             errorText: snapshot.hasData ? snapshot.data.description : null,
           ),
           keyboardType: TextInputType.name,
-          onChanged: presenter.validateName,
+          onChanged: validateName,
         );
       },
     );

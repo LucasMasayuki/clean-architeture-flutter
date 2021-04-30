@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:petdiary/app/ui/components/headline1.dart';
+import 'package:petdiary/app/ui/components/inputs/email_input.dart';
+import 'package:petdiary/app/ui/components/inputs/password_input.dart';
 import 'package:petdiary/app/ui/components/login_header.dart';
 import 'package:petdiary/app/ui/helpers/i18n/resources.dart';
 import 'package:petdiary/app/ui/mixins/keyboard_manager.dart';
 import 'package:petdiary/app/ui/mixins/loading_manager.dart';
 import 'package:petdiary/app/ui/mixins/navigation_manager.dart';
 import 'package:petdiary/app/ui/mixins/ui_error_manager.dart';
-import 'package:petdiary/app/ui/pages/login/components/email_input.dart';
 import 'package:petdiary/app/ui/pages/login/components/login_button.dart';
-import 'package:petdiary/app/ui/pages/login/components/password_input.dart';
 import 'package:petdiary/app/ui/pages/login/login_presenter.dart';
 
 class LoginPage extends StatelessWidget
@@ -20,8 +19,6 @@ class LoginPage extends StatelessWidget
 
   @override
   Widget build(BuildContext context) {
-    Get.put(presenter);
-
     return Scaffold(
       body: Builder(
         builder: (context) {
@@ -42,12 +39,22 @@ class LoginPage extends StatelessWidget
                     child: Form(
                       child: Column(
                         children: <Widget>[
-                          EmailInput(),
+                          EmailInput(
+                            emailErrorStream: presenter.emailErrorStream,
+                            validateEmail: presenter.validateEmail,
+                          ),
                           Padding(
                             padding: EdgeInsets.only(top: 8, bottom: 32),
-                            child: PasswordInput(),
+                            child: PasswordInput(
+                              passwordErrorStream:
+                                  presenter.passwordErrorStream,
+                              validatePassword: presenter.validatePassword,
+                            ),
                           ),
-                          LoginButton(),
+                          LoginButton(
+                            isFormValidStream: presenter.isFormValidStream,
+                            auth: presenter.auth,
+                          ),
                           TextButton.icon(
                             onPressed: presenter.goToSignUp,
                             icon: Icon(Icons.person),
