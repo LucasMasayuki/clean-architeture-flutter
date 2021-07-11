@@ -1,35 +1,36 @@
 import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:petdiary/app/domain/entities/user_entity.dart';
-import 'package:petdiary/app/domain/helpers/domain_errors.dart';
-import 'package:petdiary/app/domain/usecases/authentication.dart';
-import 'package:petdiary/app/presentation/presenters/getx_login_presenter.dart';
-import 'package:petdiary/app/presentation/protocols/validation.dart';
-import 'package:petdiary/app/ui/helpers/ui_error.dart';
+import 'package:clean_architeture_flutter/app/domain/entities/user_entity.dart';
+import 'package:clean_architeture_flutter/app/domain/helpers/domain_errors.dart';
+import 'package:clean_architeture_flutter/app/domain/usecases/authentication.dart';
+import 'package:clean_architeture_flutter/app/domain/usecases/save_current_user.dart';
+import 'package:clean_architeture_flutter/app/presentation/presenters/getx_login_presenter.dart';
+import 'package:clean_architeture_flutter/app/presentation/protocols/validation.dart';
+import 'package:clean_architeture_flutter/app/ui/helpers/ui_error.dart';
 
-import '../../mocks/authentication_spy.dart';
 import '../../mocks/fake_user_factory.dart';
-import '../../mocks/save_current_user_spy.dart';
-import '../../mocks/validation_spy.dart';
+import 'getx_login_presenter_test.mocks.dart';
 
+@GenerateMocks([Authentication, Validation, SaveCurrentUser])
 void main() {
-  GetxLoginPresenter sut;
-  AuthenticationSpy authentication;
-  ValidationSpy validation;
-  SaveCurrentUserSpy saveCurrentUser;
-  String email;
-  String password;
-  UserEntity user;
+  late GetxLoginPresenter sut;
+  late MockAuthentication authentication;
+  late MockValidation validation;
+  late MockSaveCurrentUser saveCurrentUser;
+  late String email;
+  late String password;
+  late UserEntity user;
 
-  PostExpectation mockValidationCall(String field) => when(
+  PostExpectation mockValidationCall(String? field) => when(
         validation.validate(
           field: field == null ? anyNamed('field') : field,
           input: anyNamed('input'),
         ),
       );
 
-  void mockValidation({String field, ValidationError value}) =>
+  void mockValidation({String? field, ValidationError? value}) =>
       mockValidationCall(field).thenReturn(value);
 
   PostExpectation mockAuthenticationCall() => when(
@@ -51,9 +52,9 @@ void main() {
       mockSaveCurrentAccountCall().thenThrow(DomainError.unexpected);
 
   setUp(() {
-    validation = ValidationSpy();
-    authentication = AuthenticationSpy();
-    saveCurrentUser = SaveCurrentUserSpy();
+    validation = MockValidation();
+    authentication = MockAuthentication();
+    saveCurrentUser = MockSaveCurrentUser();
 
     sut = GetxLoginPresenter(
       validation: validation,
@@ -68,7 +69,7 @@ void main() {
   });
 
   test('Should call Validation with correct email', () {
-    final formData = {'email': email, 'password': null};
+    final formData = {'email': email, 'password': ''};
 
     sut.validateEmail(email);
 
@@ -122,7 +123,7 @@ void main() {
       expectAsync1(
         (error) => expect(
           error,
-          null,
+          UIError.nothing,
         ),
       ),
     );
@@ -138,7 +139,7 @@ void main() {
   });
 
   test('Should call Validation with correct password', () {
-    final formData = {'email': null, 'password': password};
+    final formData = {'email': '', 'password': password};
 
     sut.validatePassword(password);
 
@@ -166,10 +167,10 @@ void main() {
     sut.validatePassword(password);
   });
 
-  test('Should emit null if validation succeeds', () {
+  test('Should emit nothing if validation succeeds', () {
     sut.passwordErrorStream.listen(
       expectAsync1(
-        (error) => expect(error, null),
+        (error) => expect(error, UIError.nothing),
       ),
     );
 
@@ -245,7 +246,7 @@ void main() {
     expectLater(
       sut.mainErrorStream,
       emitsInOrder(
-        [null, UIError.unexpected],
+        [UIError.nothing, UIError.unexpected],
       ),
     );
 
@@ -256,7 +257,7 @@ void main() {
     sut.validateEmail(email);
     sut.validatePassword(password);
 
-    expectLater(sut.mainErrorStream, emits(null));
+    expectLater(sut.mainErrorStream, emits(UIError.nothing));
     expectLater(sut.isLoadingStream, emits(true));
 
     await sut.auth();
@@ -285,7 +286,7 @@ void main() {
     expectLater(
       sut.mainErrorStream,
       emitsInOrder(
-        [null, UIError.invalidCredentials],
+        [UIError.nothing, UIError.invalidCredentials],
       ),
     );
 
@@ -305,7 +306,7 @@ void main() {
     expectLater(
       sut.mainErrorStream,
       emitsInOrder(
-        [null, UIError.unexpected],
+        [UIError.nothing, UIError.unexpected],
       ),
     );
 

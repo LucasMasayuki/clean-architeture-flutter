@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:petdiary/app/ui/helpers/i18n/resources.dart';
+import 'package:clean_architeture_flutter/app/ui/helpers/i18n/resources.dart';
 
 class SignUpButton extends StatelessWidget {
-  final Stream<bool> isFormValidStream;
-  final Function signUp;
+  final Stream<bool?> isFormValidStream;
+  final void Function() signUp;
 
   const SignUpButton({
-    @required this.isFormValidStream,
-    @required this.signUp,
+    required this.isFormValidStream,
+    required this.signUp,
   });
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<bool>(
+    return StreamBuilder<bool?>(
       stream: isFormValidStream,
       builder: (context, snapshot) {
         return ElevatedButton(

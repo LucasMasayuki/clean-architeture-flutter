@@ -2,21 +2,28 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:petdiary/app/ui/pages/splash/splash_page.dart';
+import 'package:clean_architeture_flutter/app/ui/pages/splash/splash_page.dart';
+import 'package:clean_architeture_flutter/app/ui/pages/splash/splash_presenter.dart';
 
-import '../../mocks/splash_presenter_spy.dart';
 import '../helpers/helper.dart';
+import 'splash_page_test.mocks.dart';
 
+@GenerateMocks([SplashPresenter])
 void main() {
-  SplashPresenterSpy presenter;
-  StreamController<String> navigateToController;
+  late MockSplashPresenter presenter;
+  late StreamController<String?> navigateToController;
 
   Future<void> loadPage(WidgetTester tester) async {
-    presenter = SplashPresenterSpy();
-    navigateToController = StreamController<String>();
-    when(presenter.navigateToStream)
-        .thenAnswer((_) => navigateToController.stream);
+    presenter = MockSplashPresenter();
+    navigateToController = StreamController<String?>();
+
+    when(
+      presenter.navigateToStream,
+    ).thenAnswer(
+      (_) => navigateToController.stream,
+    );
 
     await tester.pumpWidget(
       makePage(
@@ -58,10 +65,6 @@ void main() {
     await loadPage(tester);
 
     navigateToController.add('');
-    await tester.pump();
-    expect(currentRoute, '/');
-
-    navigateToController.add(null);
     await tester.pump();
     expect(currentRoute, '/');
   });

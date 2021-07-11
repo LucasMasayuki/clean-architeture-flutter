@@ -1,27 +1,26 @@
-import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:petdiary/app/data/api/http_error.dart';
-import 'package:petdiary/app/data/usecases/remote_authentication.dart';
-import 'package:petdiary/app/domain/helpers/domain_errors.dart';
-import 'package:petdiary/app/domain/usecases/authentication.dart';
+import 'package:clean_architeture_flutter/app/data/api/graphql.dart';
+import 'package:clean_architeture_flutter/app/data/api/http_error.dart';
+import 'package:clean_architeture_flutter/app/data/usecases/remote_authentication.dart';
+import 'package:clean_architeture_flutter/app/domain/helpers/domain_errors.dart';
+import 'package:clean_architeture_flutter/app/domain/usecases/authentication.dart';
+import 'package:clean_architeture_flutter/app/main/graphql/auth.dart';
 
-import '../../mocks/dio_client_spy.dart';
 import '../../mocks/fake_params_factory.dart';
 import '../../mocks/fake_user_factory.dart';
+import 'remote_authentication_test.mocks.dart';
 
+@GenerateMocks([GraphQl])
 void main() {
-  RemoteAuthentication sut;
-  DioClientSpy dioClient;
-  String url;
-  AuthenticationParams params;
-  Map apiResult;
+  late RemoteAuthentication sut;
+  late MockGraphQl graphQlClient;
+  late AuthenticationParams params;
+  late Map apiResult;
 
   PostExpectation mockRequest() => when(
-        dioClient.post(
-          any,
-          data: anyNamed('data'),
-        ),
+        graphQlClient.query(any, any),
       );
 
   void mockHttpData(Map<String, dynamic> data) {
@@ -34,25 +33,20 @@ void main() {
   void mockHttpError(HttpError error) => mockRequest().thenThrow(error);
 
   setUp(() {
-    dioClient = DioClientSpy();
-    url = faker.internet.httpUrl();
-    sut = RemoteAuthentication(dioClient: dioClient, url: url);
+    graphQlClient = MockGraphQl();
+    sut = RemoteAuthentication(graphQlClient: graphQlClient);
     params = FakeParamsFactory.makeAuthentication();
     mockHttpData(FakeUserFactory.makeApiJson());
   });
 
   test('Should call dioClient with correct values', () async {
     await sut.auth(params);
+    final data = {
+      'email': params.email,
+      'password': params.password,
+    };
 
-    verify(
-      dioClient.post(
-        url,
-        data: {
-          'email': params.email,
-          'password': params.password,
-        },
-      ),
-    );
+    verify(graphQlClient.query(LOGIN_QUERY, data));
   });
 
   test('Should throw UnexpectedError if dioClient returns 400', () async {

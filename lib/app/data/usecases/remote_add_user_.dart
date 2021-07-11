@@ -1,28 +1,21 @@
-import 'package:meta/meta.dart';
-import 'package:petdiary/app/data/api/dio_client.dart';
-import 'package:petdiary/app/data/api/http_error.dart';
-import 'package:petdiary/app/data/models/remote_user_model.dart';
-import 'package:petdiary/app/domain/entities/user_entity.dart';
-import 'package:petdiary/app/domain/helpers/domain_errors.dart';
-import 'package:petdiary/app/domain/usecases/add_user.dart';
+import 'package:clean_architeture_flutter/app/data/api/graphql.dart';
+import 'package:clean_architeture_flutter/app/data/api/http_error.dart';
+import 'package:clean_architeture_flutter/app/data/models/remote_user_model.dart';
+import 'package:clean_architeture_flutter/app/domain/entities/user_entity.dart';
+import 'package:clean_architeture_flutter/app/domain/helpers/domain_errors.dart';
+import 'package:clean_architeture_flutter/app/domain/usecases/add_user.dart';
+import 'package:clean_architeture_flutter/app/main/graphql/auth.dart';
 
 class RemoteAddUser implements AddUser {
-  final DioClient httpClient;
-  final String url;
+  final GraphQl graphQlClient;
 
-  RemoteAddUser({
-    @required this.httpClient,
-    @required this.url,
-  });
+  RemoteAddUser({required this.graphQlClient});
 
   Future<UserEntity> add(AddUserParams params) async {
     final body = RemoteAddUserParams.fromDomain(params).toJson();
 
     try {
-      final responseData = await httpClient.post(
-        url,
-        data: body,
-      );
+      final responseData = await graphQlClient.mutate(SIGNUP_MUTATION, body);
 
       return RemoteUserModel.fromJson(responseData).toEntity();
     } on HttpError catch (error) {
@@ -40,10 +33,10 @@ class RemoteAddUserParams {
   final String passwordConfirmation;
 
   RemoteAddUserParams({
-    @required this.name,
-    @required this.email,
-    @required this.password,
-    @required this.passwordConfirmation,
+    required this.name,
+    required this.email,
+    required this.password,
+    required this.passwordConfirmation,
   });
 
   factory RemoteAddUserParams.fromDomain(AddUserParams params) =>

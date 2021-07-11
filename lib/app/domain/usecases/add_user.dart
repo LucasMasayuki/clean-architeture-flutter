@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:meta/meta.dart';
-import 'package:petdiary/app/domain/entities/user_entity.dart';
+import 'package:clean_architeture_flutter/app/domain/entities/user_entity.dart';
 
 abstract class AddUser {
   Future<UserEntity> add(AddUserParams params);
@@ -20,9 +19,9 @@ class AddUserParams extends Equatable {
       ];
 
   AddUserParams({
-    @required this.name,
-    @required this.email,
-    @required this.password,
-    @required this.passwordConfirmation,
+    required this.name,
+    required this.email,
+    required this.password,
+    required this.passwordConfirmation,
   });
 }

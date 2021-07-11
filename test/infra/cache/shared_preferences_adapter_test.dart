@@ -1,18 +1,21 @@
 import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:petdiary/app/infra/cache/shared_preferences_adapter.dart';
+import 'package:clean_architeture_flutter/app/infra/cache/shared_preferences_adapter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../mocks/shared_preferences_spy.dart';
+import 'shared_preferences_adapter_test.mocks.dart';
 
+@GenerateMocks([SharedPreferences])
 void main() {
-  SharedPreferencesAdapter sut;
-  SharedPreferencesSpy preferences;
-  String key;
-  String value;
+  late SharedPreferencesAdapter sut;
+  late MockSharedPreferences preferences;
+  String key = '';
+  String value = '';
 
   setUp(() {
-    preferences = SharedPreferencesSpy();
+    preferences = MockSharedPreferences();
     sut = SharedPreferencesAdapter(preferences: preferences);
     key = faker.lorem.word();
     value = faker.guid.guid();
@@ -27,6 +30,9 @@ void main() {
         ).thenThrow(Exception());
 
     test('Should call save secure with correct values', () async {
+      when(preferences.setString(key, value))
+          .thenAnswer((_) => Future.value(true));
+
       await sut.save(key: key, value: value);
 
       verify(preferences.setString(key, value));
@@ -42,7 +48,11 @@ void main() {
   });
 
   group('fetch', () {
-    PostExpectation mockFetchSecureCall() => when(preferences.getString(any));
+    PostExpectation mockFetchSecureCall() => when(
+          preferences.getString(
+            any,
+          ),
+        );
 
     void mockFetchSecure() => mockFetchSecureCall().thenAnswer((_) => value);
 
@@ -81,6 +91,9 @@ void main() {
         ).thenThrow(Exception());
 
     test('Should call delete with correct key', () async {
+      when(preferences.remove(key))
+          .thenAnswer((realInvocation) => Future.value(true));
+
       await sut.delete(key);
 
       verify(preferences.remove(key)).called(1);

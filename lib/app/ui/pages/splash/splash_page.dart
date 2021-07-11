@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:petdiary/app/ui/mixins/navigation_manager.dart';
-import 'package:petdiary/app/ui/pages/splash/splash_presenter.dart';
+import 'package:clean_architeture_flutter/app/ui/mixins/navigation_manager.dart';
+import 'package:clean_architeture_flutter/app/ui/pages/splash/splash_presenter.dart';
 
 class SplashPage extends StatelessWidget with NavigationManager {
   final SplashPresenter presenter;
 
-  SplashPage({@required this.presenter});
+  SplashPage({required this.presenter});
 
   @override
   Widget build(BuildContext context) {

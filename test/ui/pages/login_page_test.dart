@@ -4,30 +4,32 @@ import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:petdiary/app/ui/helpers/ui_error.dart';
-import 'package:petdiary/app/ui/pages/login/login_page.dart';
-import 'package:petdiary/app/ui/pages/login/login_presenter.dart';
+import 'package:clean_architeture_flutter/app/ui/helpers/ui_error.dart';
+import 'package:clean_architeture_flutter/app/ui/pages/login/login_page.dart';
+import 'package:clean_architeture_flutter/app/ui/pages/login/login_presenter.dart';
 
-import '../../mocks/login_presenter_spy.dart';
 import '../helpers/helper.dart';
+import 'login_page_test.mocks.dart';
 
+@GenerateMocks([LoginPresenter])
 void main() {
-  LoginPresenter presenter;
-  StreamController<UIError> emailErrorController;
-  StreamController<UIError> passwordErrorController;
-  StreamController<UIError> mainErrorController;
-  StreamController<String> navigateToController;
-  StreamController<bool> isFormValidController;
-  StreamController<bool> isLoadingController;
+  late MockLoginPresenter presenter;
+  late StreamController<UIError?> emailErrorController;
+  late StreamController<UIError?> passwordErrorController;
+  late StreamController<UIError?> mainErrorController;
+  late StreamController<String?> navigateToController;
+  late StreamController<bool?> isFormValidController;
+  late StreamController<bool?> isLoadingController;
 
   void initStreams() {
-    emailErrorController = StreamController<UIError>();
-    passwordErrorController = StreamController<UIError>();
-    mainErrorController = StreamController<UIError>();
-    navigateToController = StreamController<String>();
-    isFormValidController = StreamController<bool>();
-    isLoadingController = StreamController<bool>();
+    emailErrorController = StreamController<UIError?>();
+    passwordErrorController = StreamController<UIError?>();
+    mainErrorController = StreamController<UIError?>();
+    navigateToController = StreamController<String?>();
+    isFormValidController = StreamController<bool?>();
+    isLoadingController = StreamController<bool?>();
   }
 
   void mockStreams() {
@@ -55,7 +57,7 @@ void main() {
   }
 
   Future<void> loadPage(WidgetTester tester) async {
-    presenter = LoginPresenterSpy();
+    presenter = MockLoginPresenter();
     initStreams();
     mockStreams();
 
@@ -117,15 +119,16 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    emailErrorController.add(null);
+    emailErrorController.add(UIError.nothing);
     await tester.pump();
 
     expect(
-        find.descendant(
-          of: find.bySemanticsLabel('Email'),
-          matching: find.byType(Text),
-        ),
-        findsOneWidget);
+      find.descendant(
+        of: find.widgetWithText(TextFormField, 'Email'),
+        matching: find.byType(Text),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('Should present error if password is empty',
@@ -142,15 +145,16 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    passwordErrorController.add(null);
+    passwordErrorController.add(UIError.nothing);
     await tester.pump();
 
     expect(
-        find.descendant(
-          of: find.bySemanticsLabel('Senha'),
-          matching: find.byType(Text),
-        ),
-        findsOneWidget);
+      find.descendant(
+        of: find.bySemanticsLabel('Senha'),
+        matching: find.byType(Text),
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('Should enable button if form is valid',

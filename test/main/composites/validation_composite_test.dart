@@ -1,15 +1,18 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:petdiary/app/main/composites/validation_composite.dart';
-import 'package:petdiary/app/presentation/protocols/validation.dart';
+import 'package:clean_architeture_flutter/app/main/composites/validation_composite.dart';
+import 'package:clean_architeture_flutter/app/presentation/protocols/validation.dart';
+import 'package:clean_architeture_flutter/app/validation/protocols/field_validation.dart';
 
-import '../../mocks/field_validation_spy.dart';
+import 'validation_composite_test.mocks.dart';
 
+@GenerateMocks([FieldValidation])
 void main() {
-  ValidationComposite sut;
-  FieldValidationSpy validation1;
-  FieldValidationSpy validation2;
-  FieldValidationSpy validation3;
+  late ValidationComposite sut;
+  late MockFieldValidation validation1;
+  late MockFieldValidation validation2;
+  late MockFieldValidation validation3;
 
   void mockValidation1(ValidationError error) =>
       when(validation1.validate(any)).thenReturn(error);
@@ -21,15 +24,15 @@ void main() {
       when(validation3.validate(any)).thenReturn(error);
 
   setUp(() {
-    validation1 = FieldValidationSpy();
+    validation1 = MockFieldValidation();
     when(validation1.field).thenReturn('other_field');
-    mockValidation1(null);
-    validation2 = FieldValidationSpy();
+    mockValidation1(ValidationError.nothing);
+    validation2 = MockFieldValidation();
     when(validation2.field).thenReturn('any_field');
-    mockValidation2(null);
-    validation3 = FieldValidationSpy();
+    mockValidation2(ValidationError.nothing);
+    validation3 = MockFieldValidation();
     when(validation3.field).thenReturn('any_field');
-    mockValidation3(null);
+    mockValidation3(ValidationError.nothing);
     sut = ValidationComposite([validation1, validation2, validation3]);
   });
 
@@ -39,7 +42,7 @@ void main() {
       input: {'any_field': 'any_value'},
     );
 
-    expect(error, null);
+    expect(error, ValidationError.nothing);
   });
 
   test('Should return the first error', () {

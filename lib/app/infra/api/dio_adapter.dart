@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:get/get_connect/http/src/status/http_status.dart';
-import 'package:petdiary/app/data/api/dio_client.dart';
-import 'package:petdiary/app/data/api/http_error.dart';
+import 'package:clean_architeture_flutter/app/data/api/dio_client.dart';
+import 'package:clean_architeture_flutter/app/data/api/http_error.dart';
 
 class DioAdapter implements DioClient {
   final Dio client;
@@ -11,14 +11,14 @@ class DioAdapter implements DioClient {
   DioAdapter(this.client);
 
   Future<T> get<T>(
-    String path, {
-    Map<String, dynamic> queryParameters,
-    Options options,
-    CancelToken cancelToken,
-    ProgressCallback onReceiveProgress,
+    String url, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onReceiveProgress,
   }) async {
     final response = await this.client.get(
-          path,
+          url,
           queryParameters: queryParameters,
           options: options,
           cancelToken: cancelToken,
@@ -29,16 +29,16 @@ class DioAdapter implements DioClient {
   }
 
   Future<T> post<T>(
-    String path, {
-    Map<String, dynamic> data,
-    Map<String, dynamic> queryParameters,
-    Options options,
-    CancelToken cancelToken,
-    ProgressCallback onSendProgress,
-    ProgressCallback onReceiveProgress,
+    String url, {
+    required Map<String, dynamic> data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
   }) async {
     final response = await this.client.post(
-          path,
+          url,
           data: FormData.fromMap(data),
           queryParameters: queryParameters,
           options: options,

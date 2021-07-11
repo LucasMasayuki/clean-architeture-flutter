@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:petdiary/app/presentation/protocols/validation.dart';
-import 'package:petdiary/app/validation/protocols/field_validation.dart';
+import 'package:clean_architeture_flutter/app/presentation/protocols/validation.dart';
+import 'package:clean_architeture_flutter/app/validation/protocols/field_validation.dart';
 
 class RequiredFieldValidation extends Equatable implements FieldValidation {
   final String field;
@@ -10,5 +10,7 @@ class RequiredFieldValidation extends Equatable implements FieldValidation {
   RequiredFieldValidation(this.field);
 
   ValidationError validate(Map input) =>
-      input[field]?.isNotEmpty == true ? null : ValidationError.requiredField;
+      input[field] != null && (input[field] as String).isNotEmpty
+          ? ValidationError.nothing
+          : ValidationError.requiredField;
 }

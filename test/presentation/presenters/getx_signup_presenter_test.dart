@@ -1,37 +1,38 @@
 import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:petdiary/app/domain/entities/user_entity.dart';
-import 'package:petdiary/app/domain/helpers/domain_errors.dart';
-import 'package:petdiary/app/domain/usecases/add_user.dart';
-import 'package:petdiary/app/presentation/presenters/getx_signup_presenter.dart';
-import 'package:petdiary/app/presentation/protocols/validation.dart';
-import 'package:petdiary/app/ui/helpers/ui_error.dart';
+import 'package:clean_architeture_flutter/app/domain/entities/user_entity.dart';
+import 'package:clean_architeture_flutter/app/domain/helpers/domain_errors.dart';
+import 'package:clean_architeture_flutter/app/domain/usecases/add_user.dart';
+import 'package:clean_architeture_flutter/app/domain/usecases/save_current_user.dart';
+import 'package:clean_architeture_flutter/app/presentation/presenters/getx_signup_presenter.dart';
+import 'package:clean_architeture_flutter/app/presentation/protocols/validation.dart';
+import 'package:clean_architeture_flutter/app/ui/helpers/ui_error.dart';
 
-import '../../mocks/add_user_spy_spy.dart';
 import '../../mocks/fake_user_factory.dart';
-import '../../mocks/save_current_user_spy.dart';
-import '../../mocks/validation_spy.dart';
+import 'getx_signup_presenter_test.mocks.dart';
 
+@GenerateMocks([Validation, SaveCurrentUser, AddUser])
 void main() {
-  GetxSignUpPresenter sut;
-  ValidationSpy validation;
-  SaveCurrentUserSpy saveCurrentUser;
-  AddUserSpy addUser;
-  String email;
-  String name;
-  String password;
-  String passwordConfirmation;
-  UserEntity user;
+  late GetxSignUpPresenter sut;
+  late MockValidation validation;
+  late MockSaveCurrentUser saveCurrentUser;
+  late MockAddUser addUser;
+  late String email;
+  late String name;
+  late String password;
+  late String passwordConfirmation;
+  late UserEntity user;
 
-  PostExpectation mockValidationCall(String field) => when(
+  PostExpectation mockValidationCall(String? field) => when(
         validation.validate(
           field: field == null ? anyNamed('field') : field,
           input: anyNamed('input'),
         ),
       );
 
-  void mockValidation({String field, ValidationError value}) =>
+  void mockValidation({String? field, ValidationError? value}) =>
       mockValidationCall(field).thenReturn(value);
 
   PostExpectation mockAddUserCall() => when(addUser.add(any));
@@ -53,9 +54,9 @@ void main() {
       );
 
   setUp(() {
-    validation = ValidationSpy();
-    addUser = AddUserSpy();
-    saveCurrentUser = SaveCurrentUserSpy();
+    validation = MockValidation();
+    addUser = MockAddUser();
+    saveCurrentUser = MockSaveCurrentUser();
     sut = GetxSignUpPresenter(
       validation: validation,
       addUser: addUser,
@@ -72,10 +73,10 @@ void main() {
 
   test('Should call Validation with correct email', () {
     final formData = {
-      'name': null,
+      'name': '',
       'email': email,
-      'password': null,
-      'passwordConfirmation': null
+      'password': '',
+      'passwordConfirmation': ''
     };
 
     sut.validateEmail(email);
@@ -94,8 +95,10 @@ void main() {
         ),
       ),
     );
-    sut.isFormValidStream
-        .listen(expectAsync1((isValid) => expect(isValid, false)));
+
+    sut.isFormValidStream.listen(
+      expectAsync1((isValid) => expect(isValid, false)),
+    );
 
     sut.validateEmail(email);
     sut.validateEmail(email);
@@ -124,7 +127,7 @@ void main() {
       expectAsync1(
         (error) => expect(
           error,
-          null,
+          UIError.nothing,
         ),
       ),
     );
@@ -138,9 +141,9 @@ void main() {
   test('Should call Validation with correct name', () {
     final formData = {
       'name': name,
-      'email': null,
-      'password': null,
-      'passwordConfirmation': null
+      'email': '',
+      'password': '',
+      'passwordConfirmation': ''
     };
 
     sut.validateName(name);
@@ -189,12 +192,18 @@ void main() {
       expectAsync1(
         (error) => expect(
           error,
-          null,
+          UIError.nothing,
         ),
       ),
     );
-    sut.isFormValidStream
-        .listen(expectAsync1((isValid) => expect(isValid, false)));
+    sut.isFormValidStream.listen(
+      expectAsync1(
+        (isValid) => expect(
+          isValid,
+          false,
+        ),
+      ),
+    );
 
     sut.validateName(name);
     sut.validateName(name);
@@ -202,10 +211,10 @@ void main() {
 
   test('Should call Validation with correct password', () {
     final formData = {
-      'name': null,
-      'email': null,
+      'name': '',
+      'email': '',
       'password': password,
-      'passwordConfirmation': null
+      'passwordConfirmation': ''
     };
 
     sut.validatePassword(password);
@@ -255,10 +264,23 @@ void main() {
   });
 
   test('Should emit null if validation succeeds', () {
-    sut.passwordErrorStream
-        .listen(expectAsync1((error) => expect(error, null)));
-    sut.isFormValidStream
-        .listen(expectAsync1((isValid) => expect(isValid, false)));
+    sut.passwordErrorStream.listen(
+      expectAsync1(
+        (error) => expect(
+          error,
+          UIError.nothing,
+        ),
+      ),
+    );
+
+    sut.isFormValidStream.listen(
+      expectAsync1(
+        (isValid) => expect(
+          isValid,
+          false,
+        ),
+      ),
+    );
 
     sut.validatePassword(password);
     sut.validatePassword(password);
@@ -266,9 +288,9 @@ void main() {
 
   test('Should call Validation with correct passwordConfirmation', () {
     final formData = {
-      'name': null,
-      'email': null,
-      'password': null,
+      'name': '',
+      'email': '',
+      'password': '',
       'passwordConfirmation': passwordConfirmation
     };
 
@@ -316,10 +338,23 @@ void main() {
   });
 
   test('Should emit null if validation succeeds', () {
-    sut.passwordConfirmationErrorStream
-        .listen(expectAsync1((error) => expect(error, null)));
-    sut.isFormValidStream
-        .listen(expectAsync1((isValid) => expect(isValid, false)));
+    sut.passwordConfirmationErrorStream.listen(
+      expectAsync1(
+        (error) => expect(
+          error,
+          UIError.nothing,
+        ),
+      ),
+    );
+
+    sut.isFormValidStream.listen(
+      expectAsync1(
+        (isValid) => expect(
+          isValid,
+          false,
+        ),
+      ),
+    );
 
     sut.validatePasswordConfirmation(passwordConfirmation);
     sut.validatePasswordConfirmation(passwordConfirmation);
@@ -380,7 +415,7 @@ void main() {
       sut.mainErrorStream,
       emitsInOrder(
         [
-          null,
+          UIError.nothing,
           UIError.unexpected,
         ],
       ),
@@ -397,7 +432,7 @@ void main() {
     sut.validatePassword(password);
     sut.validatePasswordConfirmation(passwordConfirmation);
 
-    expectLater(sut.mainErrorStream, emits(null));
+    expectLater(sut.mainErrorStream, emits(UIError.nothing));
     expectLater(sut.isLoadingStream, emits(true));
 
     await sut.signUp();
@@ -415,7 +450,7 @@ void main() {
       sut.mainErrorStream,
       emitsInOrder(
         [
-          null,
+          UIError.nothing,
           UIError.emailInUse,
         ],
       ),
@@ -436,7 +471,7 @@ void main() {
       sut.mainErrorStream,
       emitsInOrder(
         [
-          null,
+          UIError.nothing,
           UIError.unexpected,
         ],
       ),
@@ -451,8 +486,14 @@ void main() {
     sut.validatePassword(password);
     sut.validatePasswordConfirmation(passwordConfirmation);
 
-    sut.navigateToStream
-        .listen(expectAsync1((page) => expect(page, '/surveys')));
+    sut.navigateToStream.listen(
+      expectAsync1(
+        (page) => expect(
+          page,
+          '/surveys',
+        ),
+      ),
+    );
 
     await sut.signUp();
   });

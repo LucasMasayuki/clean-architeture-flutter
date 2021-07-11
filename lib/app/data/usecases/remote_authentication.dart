@@ -1,22 +1,25 @@
-import 'package:meta/meta.dart';
-import 'package:petdiary/app/data/api/dio_client.dart';
-import 'package:petdiary/app/data/api/http_error.dart';
-import 'package:petdiary/app/data/models/remote_user_model.dart';
-import 'package:petdiary/app/domain/entities/user_entity.dart';
-import 'package:petdiary/app/domain/helpers/domain_errors.dart';
-import 'package:petdiary/app/domain/usecases/authentication.dart';
+import 'package:clean_architeture_flutter/app/data/api/graphql.dart';
+import 'package:clean_architeture_flutter/app/data/api/http_error.dart';
+import 'package:clean_architeture_flutter/app/data/models/remote_user_model.dart';
+import 'package:clean_architeture_flutter/app/domain/entities/user_entity.dart';
+import 'package:clean_architeture_flutter/app/domain/helpers/domain_errors.dart';
+import 'package:clean_architeture_flutter/app/domain/usecases/authentication.dart';
+import 'package:clean_architeture_flutter/app/main/graphql/auth.dart';
 
 class RemoteAuthentication implements Authentication {
-  final DioClient dioClient;
-  final String url;
+  final GraphQl graphQlClient;
 
-  RemoteAuthentication({@required this.dioClient, @required this.url});
+  RemoteAuthentication({required this.graphQlClient});
 
   Future<UserEntity> auth(AuthenticationParams params) async {
     final body = RemoteAuthenticationParams.fromDomain(params).toJson();
 
     try {
-      final responseData = await dioClient.post(url, data: body);
+      final responseData = await graphQlClient.query(LOGIN_QUERY, body);
+      if (responseData == null) {
+        throw DomainError.unexpected;
+      }
+
       return RemoteUserModel.fromJson(responseData).toEntity();
     } on HttpError catch (error) {
       throw error == HttpError.unauthorized
@@ -31,8 +34,8 @@ class RemoteAuthenticationParams {
   final String password;
 
   RemoteAuthenticationParams({
-    @required this.email,
-    @required this.password,
+    required this.email,
+    required this.password,
   });
 
   factory RemoteAuthenticationParams.fromDomain(AuthenticationParams params) =>

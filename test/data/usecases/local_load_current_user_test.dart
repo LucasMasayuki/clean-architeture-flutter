@@ -1,16 +1,19 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
-import 'package:petdiary/app/data/usecases/local_load_current_user.dart';
-import 'package:petdiary/app/domain/entities/user_entity.dart';
-import 'package:petdiary/app/domain/helpers/domain_errors.dart';
+import 'package:clean_architeture_flutter/app/data/cache/fetch_shared_preferences.dart';
+import 'package:clean_architeture_flutter/app/data/usecases/local_load_current_user.dart';
+import 'package:clean_architeture_flutter/app/domain/entities/user_entity.dart';
+import 'package:clean_architeture_flutter/app/domain/helpers/domain_errors.dart';
 
-import '../../mocks/fetch_shared_preferences_spy.dart';
+import 'local_load_current_user_test.mocks.dart';
 
+@GenerateMocks([FetchSharedPreferences])
 void main() {
-  LocalLoadCurrentUser sut;
-  FetchSharedPreferencesSpy fetchSharedPreferences;
-  String token;
+  late LocalLoadCurrentUser sut;
+  late MockFetchSharedPreferences fetchSharedPreferences;
+  late String token;
 
   PostExpectation mockFetchSecureCall() =>
       when(fetchSharedPreferences.fetch(any));
@@ -21,7 +24,7 @@ void main() {
   void mockFetchSecureError() => mockFetchSecureCall().thenThrow(Exception());
 
   setUp(() {
-    fetchSharedPreferences = FetchSharedPreferencesSpy();
+    fetchSharedPreferences = MockFetchSharedPreferences();
     sut = LocalLoadCurrentUser(
       fetchSharedPreferences: fetchSharedPreferences,
     );

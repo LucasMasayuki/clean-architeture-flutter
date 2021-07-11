@@ -1,16 +1,19 @@
-import 'package:petdiary/app/ui/helpers/i18n/resources.dart';
+import 'package:clean_architeture_flutter/app/ui/helpers/i18n/resources.dart';
 
 enum UIError {
   requiredField,
   invalidField,
   unexpected,
   invalidCredentials,
-  emailInUse
+  emailInUse,
+  nothing,
 }
 
 extension UIErrorExtension on UIError {
-  String get description {
+  String? get description {
     switch (this) {
+      case UIError.nothing:
+        return null;
       case UIError.requiredField:
         return R.string.msgRequiredField;
       case UIError.invalidField:

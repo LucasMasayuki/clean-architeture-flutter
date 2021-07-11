@@ -1,15 +1,15 @@
 import 'package:get/get.dart';
-import 'package:meta/meta.dart';
-import 'package:petdiary/app/domain/helpers/domain_errors.dart';
-import 'package:petdiary/app/domain/usecases/add_user.dart';
-import 'package:petdiary/app/domain/usecases/save_current_user.dart';
-import 'package:petdiary/app/presentation/mixins/form_manager.dart';
-import 'package:petdiary/app/presentation/mixins/loading_manager.dart';
-import 'package:petdiary/app/presentation/mixins/navigation_manager.dart';
-import 'package:petdiary/app/presentation/mixins/ui_error_manager.dart';
-import 'package:petdiary/app/presentation/protocols/validation.dart';
-import 'package:petdiary/app/ui/helpers/ui_error.dart';
-import 'package:petdiary/app/ui/pages/signup/signup_presenter.dart';
+
+import 'package:clean_architeture_flutter/app/domain/helpers/domain_errors.dart';
+import 'package:clean_architeture_flutter/app/domain/usecases/add_user.dart';
+import 'package:clean_architeture_flutter/app/domain/usecases/save_current_user.dart';
+import 'package:clean_architeture_flutter/app/presentation/mixins/form_manager.dart';
+import 'package:clean_architeture_flutter/app/presentation/mixins/loading_manager.dart';
+import 'package:clean_architeture_flutter/app/presentation/mixins/navigation_manager.dart';
+import 'package:clean_architeture_flutter/app/presentation/mixins/ui_error_manager.dart';
+import 'package:clean_architeture_flutter/app/presentation/protocols/validation.dart';
+import 'package:clean_architeture_flutter/app/ui/helpers/ui_error.dart';
+import 'package:clean_architeture_flutter/app/ui/pages/signup/signup_presenter.dart';
 
 class GetxSignUpPresenter extends GetxController
     with LoadingManager, NavigationManager, FormManager, UIErrorManager
@@ -23,21 +23,21 @@ class GetxSignUpPresenter extends GetxController
   final _passwordError = Rx<UIError>(UIError.unexpected);
   final _passwordConfirmationError = Rx<UIError>(UIError.unexpected);
 
-  String _name;
-  String _email;
-  String _password;
-  String _passwordConfirmation;
+  String _name = '';
+  String _email = '';
+  String _password = '';
+  String _passwordConfirmation = '';
 
-  Stream<UIError> get emailErrorStream => _emailError.stream;
-  Stream<UIError> get nameErrorStream => _nameError.stream;
-  Stream<UIError> get passwordErrorStream => _passwordError.stream;
-  Stream<UIError> get passwordConfirmationErrorStream =>
+  Stream<UIError?> get emailErrorStream => _emailError.stream;
+  Stream<UIError?> get nameErrorStream => _nameError.stream;
+  Stream<UIError?> get passwordErrorStream => _passwordError.stream;
+  Stream<UIError?> get passwordConfirmationErrorStream =>
       _passwordConfirmationError.stream;
 
   GetxSignUpPresenter({
-    @required this.validation,
-    @required this.addUser,
-    @required this.saveCurrentUser,
+    required this.validation,
+    required this.addUser,
+    required this.saveCurrentUser,
   });
 
   void validateEmail(String email) {
@@ -78,24 +78,24 @@ class GetxSignUpPresenter extends GetxController
       case ValidationError.requiredField:
         return UIError.requiredField;
       default:
-        return null;
+        return UIError.nothing;
     }
   }
 
   void _validateForm() {
-    isFormValid = _emailError.value == null &&
-        _nameError.value == null &&
-        _passwordError.value == null &&
-        _passwordConfirmationError.value == null &&
-        _name != null &&
-        _email != null &&
-        _password != null &&
-        _passwordConfirmation != null;
+    isFormValid = _emailError.value == UIError.nothing &&
+        _nameError.value == UIError.nothing &&
+        _passwordError.value == UIError.nothing &&
+        _passwordConfirmationError.value == UIError.nothing &&
+        _name != '' &&
+        _email != '' &&
+        _password != '' &&
+        _passwordConfirmation != '';
   }
 
   Future<void> signUp() async {
     try {
-      mainError = null;
+      mainError = UIError.nothing;
       isLoading = true;
       final user = await addUser.add(
         AddUserParams(
@@ -117,6 +117,7 @@ class GetxSignUpPresenter extends GetxController
           mainError = UIError.unexpected;
           break;
       }
+
       isLoading = false;
     }
   }

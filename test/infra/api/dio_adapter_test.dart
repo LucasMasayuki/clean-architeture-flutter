@@ -2,20 +2,22 @@ import 'package:dio/dio.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get_connect/http/src/status/http_status.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:petdiary/app/data/api/http_error.dart';
-import 'package:petdiary/app/infra/api/dio_adapter.dart';
+import 'package:clean_architeture_flutter/app/data/api/http_error.dart';
+import 'package:clean_architeture_flutter/app/infra/api/dio_adapter.dart';
 
-import '../../mocks/client_spy.dart';
+import 'dio_adapter_test.mocks.dart';
 
+@GenerateMocks([Dio])
 void main() {
-  DioAdapter sut;
-  ClientSpy client;
-  String url;
+  late DioAdapter sut;
+  late MockDio client;
+  late String url;
 
   setUp(
     () {
-      client = ClientSpy();
+      client = MockDio();
       sut = DioAdapter(client);
       url = faker.internet.httpUrl();
     },
@@ -31,7 +33,7 @@ void main() {
 
     void mockResponse(
       int statusCode, {
-      Map<String, dynamic> body,
+      Map<String, dynamic>? body,
     }) {
       body = body ?? {'any_key': 'any_value'};
 
@@ -39,7 +41,7 @@ void main() {
         (_) async => Response<Map<String, dynamic>>(
           data: body,
           statusCode: statusCode,
-          requestOptions: null,
+          requestOptions: RequestOptions(path: 'test'),
         ),
       );
     }
@@ -70,7 +72,7 @@ void main() {
     });
 
     test('Should call post without body', () async {
-      await sut.post(url);
+      await sut.post(url, data: {});
 
       verify(client.post(
         url,
@@ -84,7 +86,7 @@ void main() {
     });
 
     test('Should return data if post returns 200', () async {
-      final response = await sut.post(url);
+      final response = await sut.post(url, data: {});
 
       expect(response, {'any_key': 'any_value'});
     });
@@ -92,7 +94,7 @@ void main() {
     test('Should return null if post returns 200 with no data', () async {
       mockResponse(HttpStatus.ok, body: {});
 
-      final response = await sut.post(url);
+      final response = await sut.post(url, data: {});
 
       expect(response, null);
     });
@@ -100,7 +102,7 @@ void main() {
     test('Should return null if post returns 204', () async {
       mockResponse(HttpStatus.noContent, body: {});
 
-      final response = await sut.post(url);
+      final response = await sut.post(url, data: {});
 
       expect(response, null);
     });
@@ -108,7 +110,7 @@ void main() {
     test('Should return null if post returns 204 with data', () async {
       mockResponse(204);
 
-      final response = await sut.post(url);
+      final response = await sut.post(url, data: {});
 
       expect(response, null);
     });
@@ -116,7 +118,7 @@ void main() {
     test('Should return BadRequestError if post returns 400', () async {
       mockResponse(HttpStatus.badRequest, body: {});
 
-      final future = sut.post(url);
+      final future = sut.post(url, data: {});
 
       expect(future, throwsA(HttpError.badRequest));
     });
@@ -124,7 +126,7 @@ void main() {
     test('Should return BadRequestError if post returns 400', () async {
       mockResponse(HttpStatus.badRequest);
 
-      final future = sut.post(url);
+      final future = sut.post(url, data: {});
 
       expect(future, throwsA(HttpError.badRequest));
     });
@@ -132,7 +134,7 @@ void main() {
     test('Should return UnauthorizedError if post returns 401', () async {
       mockResponse(HttpStatus.unauthorized);
 
-      final future = sut.post(url);
+      final future = sut.post(url, data: {});
 
       expect(future, throwsA(HttpError.unauthorized));
     });
@@ -140,7 +142,7 @@ void main() {
     test('Should return ForbiddenError if post returns 403', () async {
       mockResponse(HttpStatus.forbidden);
 
-      final future = sut.post(url);
+      final future = sut.post(url, data: {});
 
       expect(future, throwsA(HttpError.forbidden));
     });
@@ -148,7 +150,7 @@ void main() {
     test('Should return NotFoundError if post returns 404', () async {
       mockResponse(HttpStatus.notFound);
 
-      final future = sut.post(url);
+      final future = sut.post(url, data: {});
 
       expect(future, throwsA(HttpError.notFound));
     });
@@ -156,7 +158,7 @@ void main() {
     test('Should return ServerError if post returns 500', () async {
       mockResponse(HttpStatus.internalServerError);
 
-      final future = sut.post(url);
+      final future = sut.post(url, data: {});
 
       expect(future, throwsA(HttpError.serverError));
     });
@@ -167,7 +169,7 @@ void main() {
 
     void mockResponse(
       int statusCode, {
-      Map<String, dynamic> body,
+      Map<String, dynamic>? body,
     }) {
       body = body ?? {'any_key': 'any_value'};
 
@@ -175,7 +177,7 @@ void main() {
         (_) async => Response<Map<String, dynamic>>(
           data: body,
           statusCode: statusCode,
-          requestOptions: null,
+          requestOptions: RequestOptions(path: 'test'),
         ),
       );
     }

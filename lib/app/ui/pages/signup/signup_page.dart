@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:petdiary/app/ui/components/headline1.dart';
-import 'package:petdiary/app/ui/components/inputs/email_input.dart';
-import 'package:petdiary/app/ui/components/inputs/name_input.dart';
-import 'package:petdiary/app/ui/components/inputs/password_input.dart';
-import 'package:petdiary/app/ui/components/login_header.dart';
-import 'package:petdiary/app/ui/helpers/i18n/resources.dart';
-import 'package:petdiary/app/ui/mixins/keyboard_manager.dart';
-import 'package:petdiary/app/ui/mixins/loading_manager.dart';
-import 'package:petdiary/app/ui/mixins/navigation_manager.dart';
-import 'package:petdiary/app/ui/mixins/ui_error_manager.dart';
-import 'package:petdiary/app/ui/pages/signup/components/password_confirmation_input.dart';
-import 'package:petdiary/app/ui/pages/signup/components/signup_button.dart';
-import 'package:petdiary/app/ui/pages/signup/signup_presenter.dart';
+import 'package:clean_architeture_flutter/app/ui/components/headline1.dart';
+import 'package:clean_architeture_flutter/app/ui/components/inputs/email_input.dart';
+import 'package:clean_architeture_flutter/app/ui/components/inputs/name_input.dart';
+import 'package:clean_architeture_flutter/app/ui/components/inputs/password_input.dart';
+import 'package:clean_architeture_flutter/app/ui/components/login_header.dart';
+import 'package:clean_architeture_flutter/app/ui/helpers/i18n/resources.dart';
+import 'package:clean_architeture_flutter/app/ui/mixins/keyboard_manager.dart';
+import 'package:clean_architeture_flutter/app/ui/mixins/loading_manager.dart';
+import 'package:clean_architeture_flutter/app/ui/mixins/navigation_manager.dart';
+import 'package:clean_architeture_flutter/app/ui/mixins/ui_error_manager.dart';
+import 'package:clean_architeture_flutter/app/ui/pages/signup/components/password_confirmation_input.dart';
+import 'package:clean_architeture_flutter/app/ui/pages/signup/components/signup_button.dart';
+import 'package:clean_architeture_flutter/app/ui/pages/signup/signup_presenter.dart';
 
 class SignUpPage extends StatelessWidget
     with KeyboardManager, LoadingManager, UIErrorManager, NavigationManager {

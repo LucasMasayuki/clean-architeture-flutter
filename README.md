@@ -1,4 +1,4 @@
-# petdiary
+# clean_architeture_flutter
 
 A new Flutter project.
 

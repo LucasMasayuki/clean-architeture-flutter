@@ -1,4 +1,4 @@
-name: petdiary
+name: clean_architeture_flutter
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -18,15 +18,17 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   dio: ^4.0.0
+  http:
   equatable:
   injector: ^2.0.0
   intl: ^0.17,0
   get: ^4.1.2
   shared_preferences: ^2.0.5
+  graphql_flutter: 5.0.0-nullsafety.2
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -37,8 +39,9 @@ dependencies:
   cupertino_icons: ^1.0.2
 
 dev_dependencies:
-  faker:
-  mockito: ^5.0.3
+  build_runner:
+  faker: 2.0.0-rc.2
+  mockito: ^5.0.7
   flutter_test:
     sdk: flutter
 

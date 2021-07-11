@@ -4,60 +4,70 @@ import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:petdiary/app/ui/helpers/ui_error.dart';
-import 'package:petdiary/app/ui/pages/signup/signup_page.dart';
-import 'package:petdiary/app/ui/pages/signup/signup_presenter.dart';
+import 'package:clean_architeture_flutter/app/ui/helpers/ui_error.dart';
+import 'package:clean_architeture_flutter/app/ui/pages/signup/signup_page.dart';
+import 'package:clean_architeture_flutter/app/ui/pages/signup/signup_presenter.dart';
 
-import '../../mocks/signup_presenter_spy.dart';
 import '../helpers/helper.dart';
+import 'signup_page_test.mocks.dart';
 
+@GenerateMocks([SignUpPresenter])
 void main() {
-  SignUpPresenter presenter;
-  StreamController<UIError> nameErrorController;
-  StreamController<UIError> emailErrorController;
-  StreamController<UIError> passwordErrorController;
-  StreamController<UIError> passwordConfirmationErrorController;
-  StreamController<UIError> mainErrorController;
-  StreamController<bool> isFormValidController;
-  StreamController<bool> isLoadingController;
-  StreamController<String> navigateToController;
+  late MockSignUpPresenter presenter;
+  late StreamController<UIError?> nameErrorController;
+  late StreamController<UIError?> emailErrorController;
+  late StreamController<UIError?> passwordErrorController;
+  late StreamController<UIError?> passwordConfirmationErrorController;
+  late StreamController<UIError?> mainErrorController;
+  late StreamController<bool?> isFormValidController;
+  late StreamController<bool?> isLoadingController;
+  late StreamController<String?> navigateToController;
 
   void initStreams() {
-    nameErrorController = StreamController<UIError>();
-    emailErrorController = StreamController<UIError>();
-    passwordErrorController = StreamController<UIError>();
-    passwordConfirmationErrorController = StreamController<UIError>();
-    mainErrorController = StreamController<UIError>();
-    isFormValidController = StreamController<bool>();
-    isLoadingController = StreamController<bool>();
-    navigateToController = StreamController<String>();
+    nameErrorController = StreamController<UIError?>();
+    emailErrorController = StreamController<UIError?>();
+    passwordErrorController = StreamController<UIError?>();
+    passwordConfirmationErrorController = StreamController<UIError?>();
+    mainErrorController = StreamController<UIError?>();
+    isFormValidController = StreamController<bool?>();
+    isLoadingController = StreamController<bool?>();
+    navigateToController = StreamController<String?>();
   }
 
   void mockStreams() {
-    when(presenter.nameErrorStream)
-        .thenAnswer((_) => nameErrorController.stream);
+    when(presenter.nameErrorStream).thenAnswer(
+      (_) => nameErrorController.stream,
+    );
 
-    when(presenter.emailErrorStream)
-        .thenAnswer((_) => emailErrorController.stream);
+    when(presenter.emailErrorStream).thenAnswer(
+      (_) => emailErrorController.stream,
+    );
 
-    when(presenter.passwordErrorStream)
-        .thenAnswer((_) => passwordErrorController.stream);
+    when(presenter.passwordErrorStream).thenAnswer(
+      (_) => passwordErrorController.stream,
+    );
 
-    when(presenter.passwordConfirmationErrorStream)
-        .thenAnswer((_) => passwordConfirmationErrorController.stream);
+    when(presenter.passwordConfirmationErrorStream).thenAnswer(
+      (_) => passwordConfirmationErrorController.stream,
+    );
 
-    when(presenter.mainErrorStream)
-        .thenAnswer((_) => mainErrorController.stream);
+    when(presenter.mainErrorStream).thenAnswer(
+      (_) => mainErrorController.stream,
+    );
 
-    when(presenter.isFormValidStream)
-        .thenAnswer((_) => isFormValidController.stream);
+    when(presenter.isFormValidStream).thenAnswer(
+      (_) => isFormValidController.stream,
+    );
 
-    when(presenter.isLoadingStream)
-        .thenAnswer((_) => isLoadingController.stream);
+    when(presenter.isLoadingStream).thenAnswer(
+      (_) => isLoadingController.stream,
+    );
 
-    when(presenter.navigateToStream)
-        .thenAnswer((_) => navigateToController.stream);
+    when(presenter.navigateToStream).thenAnswer(
+      (_) => navigateToController.stream,
+    );
   }
 
   void closeStreams() {
@@ -72,7 +82,7 @@ void main() {
   }
 
   Future<void> loadPage(WidgetTester tester) async {
-    presenter = SignUpPresenterSpy();
+    presenter = MockSignUpPresenter();
     initStreams();
     mockStreams();
 
@@ -139,6 +149,7 @@ void main() {
 
     emailErrorController.add(null);
     await tester.pump();
+
     expect(
       find.descendant(
         of: find.bySemanticsLabel('Email'),
@@ -161,6 +172,7 @@ void main() {
 
     nameErrorController.add(null);
     await tester.pump();
+
     expect(
       find.descendant(
         of: find.bySemanticsLabel('Nome'),
@@ -183,6 +195,7 @@ void main() {
 
     passwordErrorController.add(null);
     await tester.pump();
+
     expect(
       find.descendant(
         of: find.bySemanticsLabel('Senha'),
@@ -206,6 +219,7 @@ void main() {
 
     passwordConfirmationErrorController.add(null);
     await tester.pump();
+
     expect(
       find.descendant(
         of: find.bySemanticsLabel('Confirmar senha'),
@@ -273,6 +287,7 @@ void main() {
 
     isLoadingController.add(null);
     await tester.pump();
+
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
@@ -318,6 +333,7 @@ void main() {
 
     navigateToController.add(null);
     await tester.pump();
+
     expect(currentRoute, '/signup');
   });
 

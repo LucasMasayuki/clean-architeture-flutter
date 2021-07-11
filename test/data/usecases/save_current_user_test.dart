@@ -1,16 +1,19 @@
 import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:petdiary/app/data/usecases/save_current_user.dart';
-import 'package:petdiary/app/domain/entities/user_entity.dart';
-import 'package:petdiary/app/domain/helpers/domain_errors.dart';
+import 'package:clean_architeture_flutter/app/data/cache/save_shared_preferences.dart';
+import 'package:clean_architeture_flutter/app/data/usecases/save_current_user.dart';
+import 'package:clean_architeture_flutter/app/domain/entities/user_entity.dart';
+import 'package:clean_architeture_flutter/app/domain/helpers/domain_errors.dart';
 
-import '../../mocks/save_secure_cache_storage_spy.dart';
+import 'save_current_user_test.mocks.dart';
 
+@GenerateMocks([SaveSharedPreferences])
 void main() {
-  LocalSaveCurrentUser sut;
-  SaveSharedPreferencesSpy saveSharedPreferences;
-  UserEntity user;
+  late LocalSaveCurrentUser sut;
+  late MockSaveSharedPreferences saveSharedPreferences;
+  late UserEntity user;
 
   void mockError() => when(
         saveSharedPreferences.save(
@@ -20,8 +23,11 @@ void main() {
       ).thenThrow(Exception());
 
   setUp(() {
-    saveSharedPreferences = SaveSharedPreferencesSpy();
-    sut = LocalSaveCurrentUser(saveSharedPreferences: saveSharedPreferences);
+    saveSharedPreferences = MockSaveSharedPreferences();
+    sut = LocalSaveCurrentUser(
+      saveSharedPreferences: saveSharedPreferences,
+    );
+
     user = UserEntity(token: faker.guid.guid());
   });
 

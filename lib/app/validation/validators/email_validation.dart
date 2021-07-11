@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:petdiary/app/presentation/protocols/validation.dart';
-import 'package:petdiary/app/validation/protocols/field_validation.dart';
+import 'package:clean_architeture_flutter/app/presentation/protocols/validation.dart';
+import 'package:clean_architeture_flutter/app/validation/protocols/field_validation.dart';
 
 class EmailValidation extends Equatable implements FieldValidation {
   final String field;
@@ -14,9 +14,13 @@ class EmailValidation extends Equatable implements FieldValidation {
       r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
     );
 
-    final isValid =
-        input[field]?.isNotEmpty != true || regex.hasMatch(input[field]);
+    if (input[field] == null) {
+      return ValidationError.nothing;
+    }
 
-    return isValid ? null : ValidationError.invalidField;
+    final isValid =
+        input[field].isNotEmpty != true || regex.hasMatch(input[field]!);
+
+    return isValid ? ValidationError.nothing : ValidationError.invalidField;
   }
 }
