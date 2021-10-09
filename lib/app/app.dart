@@ -8,7 +8,7 @@ import 'main/factories/pages/splash/splash_page_factory.dart';
 import 'ui/theme/app_theme.dart';
 
 // Main App Widget
-class CleanArchitetureFlutterpApp extends StatelessWidget {
+class CleanArchitetureFlutterApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
@@ -17,7 +17,7 @@ class CleanArchitetureFlutterpApp extends StatelessWidget {
     );
 
     return GetMaterialApp(
-      title: 'Pet Diary',
+      title: 'Clean architeture flutter',
       debugShowCheckedModeBanner: false,
       theme: makeAppTheme(),
       navigatorObservers: [routeObserver],

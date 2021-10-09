@@ -5,5 +5,5 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Start App
-  runApp(CleanArchitetureFlutterpApp());
+  runApp(CleanArchitetureFlutterApp());
 }

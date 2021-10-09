@@ -17,13 +17,14 @@ ThemeData makeAppTheme() {
     ),
   );
   final inputDecorationTheme = InputDecorationTheme(
-      enabledBorder: UnderlineInputBorder(
-        borderSide: BorderSide(color: primaryColorLight),
-      ),
-      focusedBorder: UnderlineInputBorder(
-        borderSide: BorderSide(color: primaryColor),
-      ),
-      alignLabelWithHint: true);
+    enabledBorder: UnderlineInputBorder(
+      borderSide: BorderSide(color: primaryColorLight),
+    ),
+    focusedBorder: UnderlineInputBorder(
+      borderSide: BorderSide(color: primaryColor),
+    ),
+    alignLabelWithHint: true,
+  );
   final buttonTheme = ButtonThemeData(
     colorScheme: ColorScheme.light(primary: primaryColor),
     buttonColor: primaryColor,
